@@ -3,20 +3,19 @@ on:
   push:
     branches:
       - main
-      - circleci
   pull_request:
     branches:
       - main
 
 jobs:
-  build:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Install Python 3
         uses: actions/setup-python@v1
         with:
-          python-version: 3.10
+          python-version: 3.6
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
