@@ -120,3 +120,78 @@ def get_student_score_for_each_strand(student):
                 strand = i[0]
     
         print(strand + ':', score, 'out of', total_questions, 'correct')
+
+def progress_report(student):
+    student_id = student.id
+
+    completion_date = None
+
+    open_student_response_file = open('data/student-responses.json')
+
+    student_response_data = json.load(open_student_response_file)
+    student_responses = None
+    raw_score = None
+    curr_student_data = []
+    
+    for i in student_response_data:
+        my_dict = {}
+        if i['student']['id'] == student.id:
+            completion_date = i['started']
+            raw_score = i['results']['rawScore']
+            completion_date = completion_date.split(' ')
+            date_str =  completion_date[0]
+            format_str = '%d/%m/%Y' # The format
+            datetime_obj = datetime.strptime(date_str, format_str)
+            
+            my_dict = {
+                'student_responses': student_responses,
+                'completion_date':datetime_obj,
+                'raw_score':raw_score
+            }
+            curr_student_data.append(my_dict)
+
+
+    print('\n'+ str(student.first_name), student.last_name, 'has completed Numeracy assessment', len(curr_student_data), 'times in total. Date and raw score given below:\n')
+
+    min_date = None
+    date_printed = []
+    
+    for i in curr_student_data:
+        min_date = i['completion_date']
+
+        for j in curr_student_data:
+            if min_date > j['completion_date']:
+                if j['completion_date'] not in date_printed:
+                    min_date = j['completion_date']
+                    date_printed.append(min_date)
+        
+        if min_date is not None:
+            month = min_date.strftime("%B")
+            print('Date:', str(min_date.day) + 'th', month, str(min_date.year)+',', 'Raw Score:', i['raw_score'], 'out of 16')
+
+    min_date = curr_student_data[0]['completion_date']
+    for i in curr_student_data:
+        if i['completion_date'] < min_date:
+            min_date = i['completion_date']
+    
+    max_date = curr_student_data[0]['completion_date']
+    for i in curr_student_data:
+        if i['completion_date'] > max_date:
+            max_date = i['completion_date']
+
+    oldest_score = 0
+    latest_score = 0
+
+    for i in curr_student_data:
+        if i['completion_date'] == min_date:
+            oldest_score = i['raw_score']
+        
+        if i['completion_date'] == max_date:
+            latest_score = i['raw_score']
+
+    if latest_score > oldest_score:
+        print('\n' + str(student.first_name), student.last_name, 'got', (latest_score - oldest_score), 'more correct in the recent completed assessment than the oldest')
+
+    else:
+        print('\n' + str(student.first_name), student.last_name, 'got', (oldest_score - latest_score), 'less correct in the recent completed assessment than the oldest')
+     

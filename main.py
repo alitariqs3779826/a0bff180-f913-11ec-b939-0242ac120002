@@ -41,7 +41,11 @@ def main():
                 report_type_bool = False
                 if report_type == 1:
                     get_student_score_for_each_strand(student)
-                    
+                if report_type == 2:
+                    progress_report(student)
+                # elif report_type == 2:
+                #     progress_report(student) 
+
                 break
             else:
                 # show error message 
