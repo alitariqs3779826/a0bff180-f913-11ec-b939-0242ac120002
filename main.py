@@ -40,10 +40,13 @@ def main():
             if report_type > 0 and report_type < 4:
                 report_type_bool = False
                 
+                # if diagnostic report is choosen
                 if report_type == 1:
                     get_student_score_for_each_strand(student)
+                # if progress report is choosen
                 elif report_type == 2:
                     progress_report(student) 
+                # if feedback report is choosen
                 elif report_type == 3:
                     feedback_report(student)
 

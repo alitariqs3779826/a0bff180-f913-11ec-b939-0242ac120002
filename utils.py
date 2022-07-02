@@ -27,6 +27,7 @@ def get_all_question_strands():
     ret_val_list = []
 
     for i in question_data:
+        # finds all unique strands from questions data
         if i['strand'] not in ret_val_list:
             ret_val_list.append(i['strand'])
     
@@ -34,6 +35,7 @@ def get_all_question_strands():
 
 def get_student_score_for_each_strand(student):
     student_id = student.id
+    # get all unqiue strands
     all_strands = get_all_question_strands()
 
     completion_date = None
@@ -45,6 +47,7 @@ def get_student_score_for_each_strand(student):
     raw_score = None
 
     for i in student_response_data:
+        # get latest data of the student
         if i['student']['id'] == student.id and i['student']['yearLevel'] == (student.year_level-1):
             student_responses = i['responses']
             completion_date = i['completed']
@@ -76,6 +79,7 @@ def get_student_score_for_each_strand(student):
         count = 0
 
         for j in student_responses:
+            # store answer if student response is correct
             if j['questionId'] == i['id'] and j['response'] == i['config']['key']:
                 count = count + 1
                 correct_answer_count_for_each_strand.append((current_strand, count))
@@ -83,7 +87,7 @@ def get_student_score_for_each_strand(student):
 
     total_of_correct_answer_count_for_each_strand = []
 
-
+    # getting correct answer count for each strand
     for i in all_strands:
         count = 0
         current_strand = None
@@ -93,7 +97,7 @@ def get_student_score_for_each_strand(student):
             current_strand = j[0]
         total_of_correct_answer_count_for_each_strand.append((i, count))
 
-    
+    # get date in correct format to print
     completion_date = completion_date.split(' ')
     date_str =  completion_date[0]
     format_str = '%d/%m/%Y' # The format
@@ -108,7 +112,7 @@ def get_student_score_for_each_strand(student):
 
     print('He got', raw_score, 'right out of', str(len(question_data)) +  '.',  'Details by strand given below:\n')
     
-
+    # print count for each strand
     for i in total_of_correct_answer_count_for_each_strand:
         score = None
         total_questions = None
@@ -133,6 +137,7 @@ def progress_report(student):
     raw_score = None
     curr_student_data = []
     
+    # storing student reponse details for each assessment given by the student
     for i in student_response_data:
         my_dict = {}
         if i['student']['id'] == student.id:
@@ -156,6 +161,7 @@ def progress_report(student):
     min_date = None
     date_printed = []
     
+    # get data by minium to maximum date
     for i in curr_student_data:
         min_date = i['completion_date']
 
@@ -169,11 +175,13 @@ def progress_report(student):
             month = min_date.strftime("%B")
             print('Date:', str(min_date.day) + 'th', month, str(min_date.year)+',', 'Raw Score:', i['raw_score'], 'out of 16')
 
+    # find minimum date
     min_date = curr_student_data[0]['completion_date']
     for i in curr_student_data:
         if i['completion_date'] < min_date:
             min_date = i['completion_date']
     
+    # find maximum date
     max_date = curr_student_data[0]['completion_date']
     for i in curr_student_data:
         if i['completion_date'] > max_date:
@@ -188,10 +196,12 @@ def progress_report(student):
         
         if i['completion_date'] == max_date:
             latest_score = i['raw_score']
-
+    
+    # show this print statement if student have improved over time
     if latest_score > oldest_score:
         print('\n' + str(student.first_name), student.last_name, 'got', (latest_score - oldest_score), 'more correct in the recent completed assessment than the oldest')
-
+    
+    # show this print statement if student haven't performed well recently and was better in their previous test
     else:
         print('\n' + str(student.first_name), student.last_name, 'got', (oldest_score - latest_score), 'less correct in the recent completed assessment than the oldest')
      
@@ -205,12 +215,14 @@ def feedback_report(student):
     student_responses = []
     raw_score = None
 
+    # get latest student data
     for i in student_response_data:
         if i['student']['id'] == student.id and i['student']['yearLevel'] == (student.year_level-1):
             student_responses = i['responses']
             completion_date = i['completed']
             raw_score = i['results']['rawScore']
 
+    # get date in correct format for printing
     completion_date = completion_date.split(' ')
     date_str =  completion_date[0]
     format_str = '%d/%m/%Y' # The format
@@ -236,6 +248,7 @@ def feedback_report(student):
         my_dict = {}
 
         for j in student_responses:
+            # get all wrong answers of student
             if j['questionId'] == i['id'] and j['response'] != i['config']['key']:
                 count = count + 1
                 correct_answer_count_for_each_strand.append((current_strand, count))
@@ -252,6 +265,7 @@ def feedback_report(student):
     
     print('He got', raw_score, 'right out of', str(len(question_data)) +  '.',  'Feedback for wrong answers given below:\n')
 
+    # if any wrong answers are presen
     if wrong_answers_data:
         for i in wrong_answers_data:
             print('Question:', i['question'])
@@ -260,6 +274,7 @@ def feedback_report(student):
             wrong_answer = None
 
             for j in question_data:
+                # find labels and value for both write and wrong answer to display in print statements
                 if i['question_id'] == j['id']:
                     for x in j['config']['options']:
                         if x['id'] == i['your_answer']:
