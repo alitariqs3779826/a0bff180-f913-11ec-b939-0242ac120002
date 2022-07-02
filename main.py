@@ -59,7 +59,6 @@ def main():
         except:
             print("Can only Enter a Number Between 1 to 3!\n")
 
-    
 
 if __name__ == "__main__":
     # runs the main function

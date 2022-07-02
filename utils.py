@@ -204,7 +204,32 @@ def progress_report(student):
     # show this print statement if student haven't performed well recently and was better in their previous test
     else:
         print('\n' + str(student.first_name), student.last_name, 'got', (oldest_score - latest_score), 'less correct in the recent completed assessment than the oldest')
-     
+
+    # returning improved score from latest year to run tests
+    return (latest_score-oldest_score)
+
+def get_wrong_data(wrong_answers_data,question_data):
+    
+    for i in wrong_answers_data:
+            print('Question:', i['question'])
+
+            correct_answer = None
+            wrong_answer = None
+
+            for j in question_data:
+                # find labels and value for both write and wrong answer to display in print statements
+                if i['question_id'] == j['id']:
+                    for x in j['config']['options']:
+                        if x['id'] == i['your_answer']:
+                            wrong_answer = str(x['label']) + ' with value ' + str(x['value'])
+                        
+                        if x['id'] == i['correct_answer']:
+                            correct_answer = str(x['label']) + ' with value ' + str(x['value'])
+            
+            print('Your answer:', wrong_answer)
+            print('Correct answer:', correct_answer)
+            print('Hint:', i['hint'], '\n')
+    
 def feedback_report(student):
     student_id = student.id
     completion_date = None
@@ -265,24 +290,10 @@ def feedback_report(student):
     
     print('He got', raw_score, 'right out of', str(len(question_data)) +  '.',  'Feedback for wrong answers given below:\n')
 
-    # if any wrong answers are presen
+    # if any wrong answers are present
     if wrong_answers_data:
-        for i in wrong_answers_data:
-            print('Question:', i['question'])
+        get_wrong_data(wrong_answers_data, question_data)
 
-            correct_answer = None
-            wrong_answer = None
-
-            for j in question_data:
-                # find labels and value for both write and wrong answer to display in print statements
-                if i['question_id'] == j['id']:
-                    for x in j['config']['options']:
-                        if x['id'] == i['your_answer']:
-                            wrong_answer = str(x['label']) + ' with value ' + str(x['value'])
-                        
-                        if x['id'] == i['correct_answer']:
-                            correct_answer = str(x['label']) + ' with value ' + str(x['value'])
-            
-            print('Your answer:', wrong_answer)
-            print('Correct answer:', correct_answer)
-            print('Hint:', i['hint'], '\n')
+    # returning number of wrong answers for testing
+    return len(correct_answer_count_for_each_strand)
+    
