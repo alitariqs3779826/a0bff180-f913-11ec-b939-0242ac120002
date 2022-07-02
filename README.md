@@ -7,5 +7,6 @@
 ### The application was completed by using the following:
 1. The commits have been pushed with issue numbers, can be seen from all issues. 
 2. A project board was created, which was also used to document any assumptions which were made.
-3. Merge request is only created once.
+3. Merge request is only created Twice.
+4. Github actions are used to run tests.
 
