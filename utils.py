@@ -195,3 +195,79 @@ def progress_report(student):
     else:
         print('\n' + str(student.first_name), student.last_name, 'got', (oldest_score - latest_score), 'less correct in the recent completed assessment than the oldest')
      
+def feedback_report(student):
+    student_id = student.id
+    completion_date = None
+
+    open_student_response_file = open('data/student-responses.json')
+
+    student_response_data = json.load(open_student_response_file)
+    student_responses = []
+    raw_score = None
+
+    for i in student_response_data:
+        if i['student']['id'] == student.id and i['student']['yearLevel'] == (student.year_level-1):
+            student_responses = i['responses']
+            completion_date = i['completed']
+            raw_score = i['results']['rawScore']
+
+    completion_date = completion_date.split(' ')
+    date_str =  completion_date[0]
+    format_str = '%d/%m/%Y' # The format
+    datetime_obj = datetime.strptime(date_str, format_str)
+    month = datetime_obj.strftime("%B")
+
+    d_time = datetime.strptime(completion_date[1], "%H:%M:%S")
+    curr_time = d_time.strftime("%I:%M %p")
+
+    print('\n' + student.first_name,student.last_name ,'recently completed Numeracy assessment on', datetime_obj.day,  month , datetime_obj.year , curr_time)
+    
+    # open questions.json file 
+    open_question_file = open('data/questions.json')
+    
+    # load json data into a variable, (a list dictionary)
+    question_data = json.load(open_question_file)    
+    correct_answer_count_for_each_strand = []
+    wrong_answers_data = []
+
+    for i in question_data:
+        current_strand = i['strand']
+        count = 0
+        my_dict = {}
+
+        for j in student_responses:
+            if j['questionId'] == i['id'] and j['response'] != i['config']['key']:
+                count = count + 1
+                correct_answer_count_for_each_strand.append((current_strand, count))
+                
+                my_dict = {
+                    'your_answer': j['response'],
+                    'correct_answer': i['config']['key'],
+                    'question_id': i['id'],
+                    'question':i['stem'],
+                    'hint':i['config']['hint']
+                }
+
+                wrong_answers_data.append(my_dict)
+    
+    print('He got', raw_score, 'right out of', str(len(question_data)) +  '.',  'Feedback for wrong answers given below:\n')
+
+    if wrong_answers_data:
+        for i in wrong_answers_data:
+            print('Question:', i['question'])
+
+            correct_answer = None
+            wrong_answer = None
+
+            for j in question_data:
+                if i['question_id'] == j['id']:
+                    for x in j['config']['options']:
+                        if x['id'] == i['your_answer']:
+                            wrong_answer = str(x['label']) + ' with value ' + str(x['value'])
+                        
+                        if x['id'] == i['correct_answer']:
+                            correct_answer = str(x['label']) + ' with value ' + str(x['value'])
+            
+            print('Your answer:', wrong_answer)
+            print('Correct answer:', correct_answer)
+            print('Hint:', i['hint'], '\n')
