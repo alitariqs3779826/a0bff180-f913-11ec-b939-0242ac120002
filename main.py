@@ -1,20 +1,6 @@
-import json
 
-def load_students(student_id):
-    # open students.json file 
-    open_student_file = open('data/students.json')
-    
-    # load json data into a variable, (a list dictionary)
-    student_data = json.load(open_student_file)
-
-    ret_val_list = []
-
-    for i in student_data:
-        if i['id'] == student_id:
-            # if user id is found append the data to the list, else list will be emty
-            ret_val_list.append(i)
-
-    return ret_val_list
+from student import Student
+from utils import *
 
 def main():
     my_bool = True
@@ -39,6 +25,8 @@ def main():
             print('\nStudent with this ID does not exist, Please enter a different ID')
             print('Note: student ID is written in the format *student_number*\n')
     
+    student = Student(student_data_list[0]['id'], student_data_list[0]['firstName'], student_data_list[0]['lastName'],student_data_list[0]['yearLevel'])
+
     report_type_bool = True
     report_type = None
 
@@ -51,6 +39,9 @@ def main():
             # break the loop is entered integer is between 1 to 3
             if report_type > 0 and report_type < 4:
                 report_type_bool = False
+                if report_type == 1:
+                    get_student_score_for_each_strand(student)
+                    
                 break
             else:
                 # show error message 
